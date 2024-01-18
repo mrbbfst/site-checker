@@ -1,0 +1,47 @@
+version: '3'
+  
+services:
+  site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - PUBLIC_HOSTNAME=${PUBLIC_HOSTNAME}
+    ports:
+      - "8085:8000"
+    depends_on:
+      - db
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ${SITE_STATIC_VOLUME}:/usr/appdata
+      - ${SITE_SRC_VOLUME}:/usr/src/app
+  checker:
+    build:
+      context: ./checker
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    depends_on:
+      - db
+    volumes:
+      - ${CHECKER_SRC_VOLUME}:/usr/src/app
+
+
+  db:
+    image: mariadb:latest
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+    volumes:
+      - ${MYSQL_VOLUME}:/var/lib/mysql

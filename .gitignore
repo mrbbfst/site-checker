@@ -1,0 +1,8 @@
+**/*.pyc
+**/.env
+.vscode/
+.venv/
+__pycache__/
+migrations/
+*.bak
+check.sh
